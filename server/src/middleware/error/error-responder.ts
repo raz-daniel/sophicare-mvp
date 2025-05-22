@@ -4,9 +4,9 @@ import { IError } from '../../types/IError';
 
 export const errorResponder = (
   err: IError,
-  req: Request,
+  _req: Request,
   res: Response,
-  next: NextFunction
+  _next: NextFunction
 ) => {
   const statusCode = err.statusCode || StatusCodes.INTERNAL_SERVER_ERROR;
 
