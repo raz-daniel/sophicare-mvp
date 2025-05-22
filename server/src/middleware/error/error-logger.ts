@@ -4,7 +4,7 @@ import { IError } from '../../types/IError';
 export const errorLogger = (
   err: IError,
   req: Request,
-  res: Response,
+  _res: Response,
   next: NextFunction
 ) => {
     console.error('Error:', {
