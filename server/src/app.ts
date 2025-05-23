@@ -6,6 +6,7 @@ import { errorResponder } from './middleware/error/error-responder';
 import { connectWithRetry, closeConnection } from './db/mongoose';
 import config from './config/config';
 import healthRoutes from './routes/health';
+import authRoutes from './routes/auth';
 
 const createApp = (): Express => {
   const app = express();
@@ -15,6 +16,7 @@ const createApp = (): Express => {
   app.use(express.urlencoded({ extended: true }));
 
   app.use('/health', healthRoutes);
+  app.use('/api/auth', authRoutes);
 
   app.use(notFound);
   app.use(errorLogger);
