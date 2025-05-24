@@ -1,5 +1,5 @@
-import { passwordSchema } from "../utils/password";
 import z from "zod";
+import { passwordSchema } from "./passwordValidator";
 
 export const registerSchema = z.object({
     body: z.object({

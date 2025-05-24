@@ -3,11 +3,8 @@ import { IUser } from '../models/User';
 import config from '../config/config';
 import { AppError } from '../errors/AppError';
 import { StatusCodes } from 'http-status-codes';
+import { TokenPayload } from '@/types/TokenPayload';
 
-export interface TokenPayload {
-  userId: string;
-  role: string;
-}
 
 export const generateAccessToken = (user: IUser): string => {
   try {

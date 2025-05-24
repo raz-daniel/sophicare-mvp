@@ -7,6 +7,7 @@ import { connectWithRetry, closeConnection } from './db/mongoose';
 import config from './config/config';
 import healthRoutes from './routes/health';
 import authRoutes from './routes/auth';
+import patientRoutes from './routes/patient';
 
 const createApp = (): Express => {
   const app = express();
@@ -16,7 +17,8 @@ const createApp = (): Express => {
   app.use(express.urlencoded({ extended: true }));
 
   app.use('/health', healthRoutes);
-  app.use('/api/auth', authRoutes);
+  app.use('/api/auth', authRoutes); 
+  app.use('/api/patients', patientRoutes);
 
   app.use(notFound);
   app.use(errorLogger);
