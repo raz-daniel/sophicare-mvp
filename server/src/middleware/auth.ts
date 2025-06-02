@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { StatusCodes } from 'http-status-codes';
-import { verifyToken, TokenPayload } from '../utils/jwt';
+import { verifyToken } from '../utils/jwt';
+import { TokenPayload } from '../types/TokenPayload';
 import { UserRole } from '../models/User';
 import { AppError } from '../errors/AppError';
 
@@ -44,7 +45,8 @@ export const authorize = (...roles: UserRole[]) => {
         );
       }
 
-      if (!roles.includes(req.user.role as UserRole)) {
+      const hasRequiredRole = roles.some(role => req.user!.roles.includes(role));
+      if (!hasRequiredRole) {
         throw new AppError(
           'Insufficient permissions', 
           StatusCodes.FORBIDDEN

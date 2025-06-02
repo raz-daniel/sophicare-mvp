@@ -1,46 +1,22 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-
-export enum Gender {
-  MALE = 'male',
-  FEMALE = 'female',
-  OTHER = 'other',
-  PREFER_NOT_TO_SAY = 'prefer_not_to_say'
-}
-
-export enum MaritalStatus {
-  SINGLE = 'single',
-  MARRIED = 'married',
-  DIVORCED = 'divorced',
-  WIDOWED = 'widowed',
-  OTHER = 'other'
-}
-
-interface PatientFormData {
-  fullName: string;
-  email: string;
-  phone: string;
-  birthDate: string;
-  gender: Gender;
-  address: string;
-  occupation: string;
-  maritalStatus: MaritalStatus;
-  children: string;
-  notes: string;
-}
+import { MaritalStatus, Gender, type CreatePatientData, PatientStatus } from '../../types/patient';
+import { patientService } from '../../services/authAware/patientService';
 
 export const AddPatient = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState<PatientFormData>({
-    fullName: '',
+  const [formData, setFormData] = useState<CreatePatientData>({
+    firstName: '',
+    lastName: '',
     email: '',
     phone: '',
     birthDate: '',
-    gender: Gender.PREFER_NOT_TO_SAY,
+    status: PatientStatus.WAITING_LIST,
+    gender: Gender.OTHER,
     address: '',
     occupation: '',
-    maritalStatus: MaritalStatus.SINGLE,
+    maritalStatus: MaritalStatus.OTHER,
     children: '',
     notes: ''
   });
@@ -49,26 +25,15 @@ export const AddPatient = () => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value.trim()
+      [name]: ['email', 'phone'].includes(name) ? value.trim() : value
     }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await fetch('/api/patients', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (response.ok) {
-        navigate('/patients');
-      } else {
-        throw new Error('Failed to create patient');
-      }
+      await patientService.create(formData);
+      navigate('/patients');
     } catch (error) {
       console.error('Error creating patient:', error);
     }
@@ -82,15 +47,27 @@ export const AddPatient = () => {
         className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-6"
       >
         <h2 className="text-2xl font-semibold mb-6">Add New Patient</h2>
-        
+
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Full Name</label>
+              <label className="block text-sm font-medium mb-1">First Name</label>
               <input
                 type="text"
-                name="fullName"
-                value={formData.fullName}
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                className="input-field"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Last Name</label>
+              <input
+                type="text"
+                name="lastName"
+                value={formData.lastName}
                 onChange={handleChange}
                 className="input-field"
                 required
@@ -194,6 +171,22 @@ export const AddPatient = () => {
                 className="input-field"
               />
             </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium mb-1">Status</label>
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="input-field"
+            >
+              {Object.values(PatientStatus).map((status: PatientStatus) => (
+                <option key={status} value={status}>
+                  {status.charAt(0).toUpperCase() + status.slice(1).replace(/_/g, ' ')}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div>

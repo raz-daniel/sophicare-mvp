@@ -19,7 +19,7 @@ interface TherapyFormData {
   status: 'active' | 'completed' | 'cancelled';
 }
 
-export const AddTherapy = () => {
+export const AddTreatment = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState<TherapyFormData>({
     patientId: '',

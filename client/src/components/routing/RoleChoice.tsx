@@ -1,6 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { useAppDispatch } from '../../hooks/useAppDispatch';
+import { useAppSelector } from '../../hooks/useAppSelector';
+import type { UserRole } from '../../types/auth';
+import { setActiveRole } from '../../store/slices/authSlice';
 
 interface RoleOption {
   title: string;
@@ -11,7 +15,9 @@ interface RoleOption {
 
 export const RoleChoice = () => {
   const navigate = useNavigate();
+  const { user } = useAppSelector((state) => state.auth);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
+  const dispatch = useAppDispatch();
 
   const roleOptions: RoleOption[] = [
     {
@@ -32,7 +38,7 @@ export const RoleChoice = () => {
       path: "/admin",
       role: "admin"
     }
-  ];
+  ].filter(option => user?.role.includes(option.role as UserRole));
 
   const container = {
     hidden: { opacity: 0 },
@@ -51,6 +57,8 @@ export const RoleChoice = () => {
 
   const handleRoleSelect = (path: string, role: string) => {
     setSelectedRole(role);
+    dispatch(setActiveRole(role as UserRole));
+
     setTimeout(() => {
       navigate(path);
     }, 500);

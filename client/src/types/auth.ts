@@ -5,7 +5,7 @@ export interface User {
   firstName: string;
   lastName: string;
   email: string;
-  role: UserRole;
+  role: UserRole[];
   createdAt: string;
   updatedAt: string;
 }
@@ -36,6 +36,7 @@ export interface LoginCredentials {
   export interface AuthState {
     user: User | null;
     status: AuthStatus;
+    activeRole: UserRole | null;
     error: string | null;
     isAuthenticated: boolean;
   }

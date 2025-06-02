@@ -2,15 +2,15 @@ import { Header } from './Header';
 import { AppRoutes } from '../routing/AppRoutes';
 import { Footer } from './Footer';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { getStoredTokens } from '../../services/authService';
+import { tokenService } from '../../services/tokenService';
 import { Sidebar } from './Sidebar';
+import { useLocation } from 'react-router-dom';
 
 export const Layout = () => {
-    const { user } = useAppSelector((state) => state.auth);
-    const { accessToken } = getStoredTokens();
-
-    const showSidebar = accessToken && user;
-
+    const { activeRole } = useAppSelector((state) => state.auth);
+    const accessToken = tokenService.getAccessToken();
+    const location = useLocation();
+    const showSidebar = accessToken && activeRole && location.pathname !== '/auth';
 
   return (
     <div className="min-h-screen flex flex-col">

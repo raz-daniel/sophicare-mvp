@@ -30,19 +30,20 @@ export const LoginForm = () => {
   const navigate = useNavigate();
   const { status = AuthStatus.IDLE, error = null } = useAppSelector((state: RootState) => state.auth || {});
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<LoginCredentials>({
+  const { register, handleSubmit, formState: { errors } } = useForm<LoginCredentials>({
     resolver: zodResolver(schema),
   });
 
   const onSubmit = async (data: LoginCredentials) => {
     try {
       const result = await dispatch(login(data)).unwrap();
-      const redirectPath = ROLE_ROUTES[result.user.role] || '/';
-      navigate(redirectPath);
+
+      if (result.user.role.length > 1) {
+        navigate('/role-choice');
+      } else {
+        const redirectPath = ROLE_ROUTES[result.user.role[0] as keyof typeof ROLE_ROUTES] || '/';
+        navigate(redirectPath);
+      }
     } catch (error) {
       console.error('Login failed:', error);
     }
