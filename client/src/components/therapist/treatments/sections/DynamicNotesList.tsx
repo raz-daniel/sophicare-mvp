@@ -1,0 +1,117 @@
+import { Plus, Trash2, Star } from 'lucide-react';
+import { NoteImportance } from '../../../../types/treatment';
+
+interface Note {
+  text: string;
+  importance: NoteImportance;
+}
+
+interface DynamicNotesListProps {
+  title: string;
+  notes: Note[];
+  onChange: (notes: Note[]) => void;
+  placeholder?: string;
+}
+
+export const DynamicNotesList = ({
+  title,
+  notes,
+  onChange,
+  placeholder = "Enter note..."
+}: DynamicNotesListProps) => {
+  const addNote = () => {
+    const newNote: Note = {
+      text: '',
+      importance: NoteImportance.NORMAL
+    };
+    onChange([...notes, newNote]);
+  };
+
+  const removeNote = (index: number) => {
+    const updatedNotes = notes.filter((_, i) => i !== index);
+    onChange(updatedNotes);
+  };
+
+  const updateNote = (index: number, field: keyof Note, value: string | NoteImportance) => {
+    const updatedNotes = notes.map((note, i) => 
+      i === index ? { ...note, [field]: value } : note
+    );
+    onChange(updatedNotes);
+  };
+
+  const toggleImportance = (index: number) => {
+    const currentImportance = notes[index].importance;
+    const newImportance = currentImportance === NoteImportance.NORMAL 
+      ? NoteImportance.HIGHLIGHTED 
+      : NoteImportance.NORMAL;
+    updateNote(index, 'importance', newImportance);
+  };
+
+  return (
+    <div className="space-y-4">
+      <div className="flex justify-between items-center">
+        <h3 className="text-lg font-medium">{title}</h3>
+        <button
+          type="button"
+          onClick={addNote}
+          className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-800"
+        >
+          <Plus size={16} />
+          Add Note
+        </button>
+      </div>
+
+      {notes.length === 0 ? (
+        <div className="text-gray-500 text-sm italic">
+          No notes added yet. Click "Add Note" to start.
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {notes.map((note, index) => (
+            <div key={index} className="flex gap-3 items-start">
+              {/* Importance Toggle */}
+              <button
+                type="button"
+                onClick={() => toggleImportance(index)}
+                className={`mt-2 p-1 rounded ${
+                  note.importance === NoteImportance.HIGHLIGHTED
+                    ? 'text-yellow-500 hover:text-yellow-600'
+                    : 'text-gray-300 hover:text-gray-400'
+                }`}
+                title={note.importance === NoteImportance.HIGHLIGHTED ? 'Remove highlight' : 'Highlight note'}
+              >
+                <Star 
+                  size={16} 
+                  fill={note.importance === NoteImportance.HIGHLIGHTED ? 'currentColor' : 'none'}
+                />
+              </button>
+
+              {/* Note Text */}
+              <textarea
+                value={note.text}
+                onChange={(e) => updateNote(index, 'text', e.target.value)}
+                placeholder={placeholder}
+                className={`flex-1 input-field resize-none ${
+                  note.importance === NoteImportance.HIGHLIGHTED 
+                    ? 'border-yellow-300 bg-yellow-50' 
+                    : ''
+                }`}
+                rows={2}
+              />
+
+              {/* Remove Button */}
+              <button
+                type="button"
+                onClick={() => removeNote(index)}
+                className="mt-2 p-1 text-red-500 hover:text-red-700"
+                title="Remove note"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
