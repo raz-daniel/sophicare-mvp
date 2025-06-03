@@ -30,7 +30,8 @@ export enum PatientStatus {
 export interface IPatient extends Document {
     id: string;
     userId: mongoose.Types.ObjectId;  // The therapist this relationship is with
-    fullName: string;                 // Only required personal information
+    firstName: string;                 // Only required personal information
+    lastName: string;                 // Only required personal information
     email?: string;                   // Optional - for receipts when available
     phone?: string;
     birthDate?: Date;
@@ -54,22 +55,38 @@ const patientSchema = new Schema<IPatient>(
             ref: 'User',
             required: [true, 'Therapist reference is required']
         },
-        fullName: {
+        firstName: {
             type: String,
-            required: [true, 'Full name is required'],
+            required: [true, 'First name is required'],
             trim: true,
-            maxlength: [100, 'Full name cannot exceed 100 characters']
-        },
+            maxlength: [50, 'First name cannot exceed 50 characters']
+          },
+          lastName: {
+            type: String,
+            required: [true, 'Last name is required'],
+            trim: true,
+            maxlength: [50, 'Last name cannot exceed 50 characters']
+          },
         email: {
             type: String,
             lowercase: true,
             trim: true,
-            match: [/^\S+@\S+\.\S+$/, 'Please enter a valid email']
+            validate: {
+                validator: function(v: string) {
+                    return !v || /^\S+@\S+\.\S+$/.test(v); // Only validate if value exists and not empty
+                },
+                message: 'Please enter a valid email'
+            }
         },
         phone: {
             type: String,
             trim: true,
-            match: [/^\+?[\d\s-]{10,}$/, 'Please enter a valid phone number']
+            validate: {
+                validator: function(v: string) {
+                    return !v || /^\+?[\d\s-]{10,}$/.test(v); // Only validate if value exists and not empty
+                },
+                message: 'Please enter a valid phone number'
+            }
         },
         birthDate: {
             type: Date
@@ -149,7 +166,7 @@ const patientSchema = new Schema<IPatient>(
 // Performance indexes for common queries
 patientSchema.index({ userId: 1 });                    // Find therapist's patients
 patientSchema.index({ userId: 1, status: 1 });         // Filter by status
-patientSchema.index({ userId: 1, fullName: 1 });       // Search by name
+patientSchema.index({ userId: 1, firstName: 1, lastName: 1 });       // Search by name
 patientSchema.index({ lastTreatmentDate: 1 });         // Treatment history queries
 
 // Ensure userId references a valid User

@@ -10,7 +10,7 @@ export const generateAccessToken = (user: IUser): string => {
   try {
     const payload: TokenPayload = {
       userId: user.id,
-      role: user.role
+      roles: user.role
     };
     
     return jwt.sign(payload, config.auth.jwtSecret, { 
@@ -29,7 +29,7 @@ export const generateRefreshToken = (user: IUser): string => {
   try {
     const payload: TokenPayload = {
       userId: user.id,
-      role: user.role
+      roles: user.role
     };
 
     return jwt.sign(payload, config.auth.jwtSecret, {

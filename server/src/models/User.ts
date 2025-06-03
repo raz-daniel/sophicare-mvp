@@ -26,7 +26,7 @@ export interface IUser extends Document {
     lastName: string;
     email: string;
     password: string;
-    role: UserRole;
+    role: UserRole[];
     emailStatus: EmailStatus;
     accountStatus: AccountStatus;
     googleId?: string;
@@ -69,9 +69,15 @@ const userSchema = new Schema<IUser>(
             select: false
         },
         role: {
-            type: String,
+            type: [String],
             enum: Object.values(UserRole),
-            default: UserRole.THERAPIST
+            default: [UserRole.THERAPIST],
+            validate: {
+                validator: function(roles: UserRole[]) {
+                    return roles.length > 0; // Must have at least one role
+                },
+                message: 'User must have at least one role'
+            }
         },
         emailStatus: {
             type: String,

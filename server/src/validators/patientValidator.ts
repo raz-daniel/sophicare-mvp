@@ -2,24 +2,36 @@ import { z } from 'zod';
 import { Gender, MaritalStatus, PatientStatus } from '../models/Patient';
 import { validateObjectId } from './common';
 
+const preprocessEmptyString = (val: any) => val === "" ? undefined : val;
+
 const patientBaseSchema = z.object({
-    fullName: z.string()
-        .min(2, 'Full name must be at least 2 characters')
-        .max(100, 'Full name cannot exceed 100 characters')
+    firstName: z.string()
+        .min(2, 'First name must be at least 2 characters')
+        .max(50, 'First name cannot exceed 50 characters')
         .trim(),
-    email: z.string()
-        .email('Please enter a valid email')
-        .toLowerCase()
-        .trim()
-        .optional(),
-    phone: z.string()
-        .regex(/^\+?[\d\s\-()]{7,20}$/, 'Please enter a valid phone number')
-        .transform(val => val.replace(/[\s\-()]/g, ''))
-        .optional(),
-    birthDate: z.string()
-        .regex(/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?)?$/, "Invalid date format")
-        .transform(val => new Date(val))
-        .optional(),
+    lastName: z.string()
+        .min(2, 'Last name must be at least 2 characters')
+        .max(50, 'Last name cannot exceed 50 characters')
+        .trim(),
+    email: z.preprocess(preprocessEmptyString,
+        z.string()
+            .email('Please enter a valid email')
+            .toLowerCase()
+            .trim()
+            .optional()
+    ),
+    phone: z.preprocess(preprocessEmptyString,
+        z.string()
+            .regex(/^\+?[\d\s\-()]{7,20}$/, 'Please enter a valid phone number')
+            .transform(val => val.replace(/[\s\-()]/g, ''))
+            .optional()
+    ),
+    birthDate: z.preprocess(preprocessEmptyString,
+        z.string()
+            .regex(/^\d{4}-\d{2}-\d{2}(T\d{2}:\d{2}:\d{2}(\.\d{3})?Z?)?$/, "Invalid date format")
+            .transform(val => new Date(val))
+            .optional()
+    ),
     gender: z.nativeEnum(Gender, {
         errorMap: () => ({ message: 'Please select a valid gender' })
     }).optional(),
@@ -48,7 +60,7 @@ const patientBaseSchema = z.object({
 });
 
 export const createPatientSchema = z.object({
-    body: patientBaseSchema  
+    body: patientBaseSchema
 });
 
 export const patientParamsSchema = z.object({
@@ -58,7 +70,7 @@ export const patientParamsSchema = z.object({
 });
 
 export const updatePatientSchema = z.object({
-    body: patientBaseSchema.partial(),  
+    body: patientBaseSchema.partial(),
     params: z.object({
         id: validateObjectId('Invalid patient ID')
     })
