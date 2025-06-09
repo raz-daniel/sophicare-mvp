@@ -13,9 +13,9 @@ export const DynamicInterventionsList = ({
 }: DynamicInterventionsListProps) => {
   const addIntervention = () => {
     const newIntervention: Intervention = {
-      text: '',
       method: '',
-      description: ''
+      description: '',
+      createdAt: new Date().toISOString()
     };
     onChange([...interventions, newIntervention]);
   };

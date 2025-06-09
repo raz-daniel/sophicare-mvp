@@ -1,56 +1,38 @@
-// components/therapist/treatments/AddTreatment.tsx
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { DynamicNotesList } from './sections/DynamicNotesList';
 import { DynamicKeyInsightsList } from './sections/DynamicKeyInsightsList';
 import { DynamicInterventionsList } from './sections/DynamicInterventionsList';
-import { treatmentService } from '../../../services/authAware/treatmentService';
-import { patientService } from '../../../services/authAware/patientService';
-import { 
-  SessionStatus, 
-  type CreateTreatmentData,
-  type PatientNote,
-  type TreatmentNote,
-  type KeyInsight,
-  type Intervention,
-  type Homework
-} from '../../../types/treatment';
-import type { Patient } from '../../../types/patient';
 import { DynamicHomeworkList } from './sections/DynamicHomeworkList';
+import { treatmentService } from '../../../services/authAware/treatmentService';
+import { usePatients } from '../../../hooks/usePatients';
+import { useSubmitState } from '../../../hooks/useSubmitState';
+import { SessionStatus, type CreateTreatmentData } from '../../../types/treatment';
+import { ROUTES } from '../../../constants/routes';
+import { formatEnumValue } from '../../../utils/stringUtils';
 
 export const AddTreatment = () => {
   const navigate = useNavigate();
   const { patientId } = useParams<{ patientId: string }>();
-  const [loading, setLoading] = useState(false);
-  const [patient, setPatient] = useState<Patient | null>(null);
+  
+  if (!patientId) {
+    navigate(ROUTES.THERAPIST.PATIENTS);
+    return null;
+  }
+
+  const { patients, state: patientState, error: patientError } = usePatients();
+  const { submitState, setSubmitState } = useSubmitState();
 
   const [formData, setFormData] = useState<CreateTreatmentData>({
-    date: new Date().toISOString().split('T')[0], // Today's date
-    status: SessionStatus.PLANNED,
+    date: new Date().toISOString().split('T')[0],
+    status: SessionStatus.DRAFT,
     patientNotes: [],
     treatmentNotes: [],
     keyInsights: [],
     interventions: [],
     homework: []
   });
-
-  // Load patient data
-  useEffect(() => {
-    if (patientId) {
-      loadPatient();
-    }
-  }, [patientId]);
-
-  const loadPatient = async () => {
-    try {
-      if (!patientId) return;
-      const patientData = await patientService.getById(patientId);
-      setPatient(patientData);
-    } catch (error) {
-      console.error('Error loading patient:', error);
-    }
-  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -60,49 +42,44 @@ export const AddTreatment = () => {
     }));
   };
 
-  const handlePatientNotesChange = (notes: PatientNote[]) => {
-    setFormData(prev => ({ ...prev, patientNotes: notes }));
-  };
-
-  const handleTreatmentNotesChange = (notes: TreatmentNote[]) => {
-    setFormData(prev => ({ ...prev, treatmentNotes: notes }));
-  };
-
-  const handleKeyInsightsChange = (insights: KeyInsight[]) => {
-    setFormData(prev => ({ ...prev, keyInsights: insights }));
-  };
-
-  const handleInterventionsChange = (interventions: Intervention[]) => {
-    setFormData(prev => ({ ...prev, interventions: interventions }));
-  };
-
-  const handleHomeworkChange = (homework: Homework[]) => {
-    setFormData(prev => ({ ...prev, homework: homework }));
+  const handleFormChange = <T,>(field: keyof CreateTreatmentData, value: T[]) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!patientId) return;
 
     try {
-      setLoading(true);
+      setSubmitState('submitting');
       await treatmentService.create(patientId, formData);
-      navigate(`/dashboard`); // Navigate to treatment list
+      setSubmitState('success');
+      navigate(`${ROUTES.THERAPIST.PATIENTS}/${patientId}`);
     } catch (error) {
       console.error('Error creating treatment:', error);
-    } finally {
-      setLoading(false);
+      setSubmitState('error');
     }
   };
 
   const handleCancel = () => {
-    navigate(-1); // Go back to previous page
+    navigate(-1);
   };
 
-  if (!patient && patientId) {
+  const patient = patients.find(p => p.id === patientId);
+
+  if (patientState === 'loading') {
     return (
       <div className="p-6">
         <div className="text-center">Loading patient information...</div>
+      </div>
+    );
+  }
+
+  if (patientState === 'error' || patientError || !patient) {
+    return (
+      <div className="p-6">
+        <div className="text-center text-red-600">
+          Error loading patient information. Please try again.
+        </div>
       </div>
     );
   }
@@ -114,21 +91,19 @@ export const AddTreatment = () => {
         animate={{ opacity: 1, y: 0 }}
         className="max-w-4xl mx-auto bg-white rounded-lg shadow-md p-6"
       >
-        {/* Header */}
         <div className="mb-6">
           <h2 className="text-2xl font-semibold">Add New Treatment</h2>
-          {patient && (
-            <p className="text-gray-600 mt-1">
-              For {patient.firstName} {patient.lastName}
-            </p>
-          )}
+          <p className="text-gray-600 mt-1">
+            For {patient.firstName} {patient.lastName}
+          </p>
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Session Information */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 border rounded-lg">
             <div>
-              <label className="block text-sm font-medium mb-1">Date *</label>
+              <label className="block text-sm font-medium mb-1">
+                Date <span className="text-red-500" title="Required field">*</span>
+              </label>
               <input
                 type="date"
                 name="date"
@@ -140,7 +115,9 @@ export const AddTreatment = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium mb-1">Session Status *</label>
+              <label className="block text-sm font-medium mb-1">
+                Session Status <span className="text-red-500" title="Required field">*</span>
+              </label>
               <select
                 name="status"
                 value={formData.status}
@@ -150,73 +127,73 @@ export const AddTreatment = () => {
               >
                 {Object.values(SessionStatus).map(status => (
                   <option key={status} value={status}>
-                    {status.charAt(0).toUpperCase() + status.slice(1).replace(/([A-Z])/g, ' $1')}
+                    {formatEnumValue(status)}
                   </option>
                 ))}
               </select>
             </div>
           </div>
 
-          {/* Patient Notes Section */}
           <div className="p-4 border rounded-lg">
             <DynamicNotesList
               title="Patient Notes"
               notes={formData.patientNotes || []}
-              onChange={handlePatientNotesChange}
+              onChange={(notes) => handleFormChange('patientNotes', notes)}
               placeholder="What did the patient share? Behaviors observed, emotions expressed..."
             />
           </div>
 
-          {/* Treatment Notes Section */}
           <div className="p-4 border rounded-lg">
             <DynamicNotesList
               title="Treatment Notes"
               notes={formData.treatmentNotes || []}
-              onChange={handleTreatmentNotesChange}
+              onChange={(notes) => handleFormChange('treatmentNotes', notes)}
               placeholder="Clinical observations, therapeutic insights, professional notes..."
             />
           </div>
 
-          {/* Key Insights Section */}
           <div className="p-4 border rounded-lg">
             <DynamicKeyInsightsList
               insights={formData.keyInsights || []}
-              onChange={handleKeyInsightsChange}
+              onChange={(insights) => handleFormChange('keyInsights', insights)}
             />
           </div>
 
-          {/* Interventions Section */}
           <div className="p-4 border rounded-lg">
             <DynamicInterventionsList
               interventions={formData.interventions || []}
-              onChange={handleInterventionsChange}
+              onChange={(interventions) => handleFormChange('interventions', interventions)}
             />
           </div>
 
-          {/* Homework Section */}
           <div className="p-4 border rounded-lg">
             <DynamicHomeworkList
               homework={formData.homework || []}
-              onChange={handleHomeworkChange}
+              onChange={(homework) => handleFormChange('homework', homework)}
             />
           </div>
 
-          {/* Action Buttons */}
+          {submitState === 'error' && (
+            <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+              <p className="text-red-600">Failed to create treatment. Please try again.</p>
+            </div>
+          )}
+
           <div className="flex justify-end space-x-4 pt-6 border-t">
             <button
               type="button"
               onClick={handleCancel}
               className="btn-secondary"
-              disabled={loading}
+              disabled={submitState === 'submitting'}
             >
               Cancel
             </button>
             <button
               type="submit"
               className="btn-primary"
-              disabled={loading}
+              disabled={submitState === 'submitting'}
             >
-              {loading ? 'Creating Treatment...' : 'Create Treatment'}
+              {submitState === 'submitting' ? 'Creating Treatment...' : 'Create Treatment'}
             </button>
           </div>
         </form>

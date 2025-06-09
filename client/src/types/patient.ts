@@ -13,6 +13,8 @@ export interface Patient {
     notes?: string;
     userId: string;
     status?: PatientStatus;
+    treatmentCount?: number;
+    lastTreatmentDate?: string;
     createdAt: string;
     updatedAt: string;
   }

@@ -10,10 +10,10 @@ export const AuthPage = () => {
       <div className="max-w-md w-full space-y-8 bg-background p-8 rounded-lg shadow-lg">
         <div>
           <h2 className="mt-6 text-center text-3xl font-extrabold text-text">
-            Welcome Back to SophiCare, 
+            SophiCare Authentication 
           </h2>
           <p className="mt-2 text-center text-sm text-text/60">
-            Your trusted platform for mental health care
+            Please sign in to continue
           </p>
         </div>
 

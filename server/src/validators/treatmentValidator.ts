@@ -1,13 +1,6 @@
 import { z } from 'zod';
-import { 
-    SessionStatus, 
-    HomeworkTarget, 
-    HomeworkStatus, 
-    PaymentStatus, 
-    ReceiptStatus, 
-    AppointmentStatus,
-    NoteImportance,
-    PaymentMethod
+import {
+    SessionStatus, HomeworkTarget, HomeworkStatus, PaymentStatus, ReceiptStatus, AppointmentStatus, NoteImportance, PaymentMethod
 } from '../models/Treatment';
 import { validateObjectId } from './common';
 
@@ -25,14 +18,14 @@ const treatmentBaseSchema = z.object({
         importance: z.nativeEnum(NoteImportance, {
             errorMap: () => ({ message: 'Please select a valid importance level' })
         }).default(NoteImportance.NORMAL),
-        createdAt: z.date().optional()
+        createdAt: z.string().datetime().optional()
     })).optional(),
     treatmentNotes: z.array(z.object({
         text: z.string().min(1, 'Note text is required'),
         importance: z.nativeEnum(NoteImportance, {
             errorMap: () => ({ message: 'Please select a valid importance level' })
         }).default(NoteImportance.NORMAL),
-        createdAt: z.date().optional()
+        createdAt: z.string().datetime().optional()
     })).optional(),
     interventions: z.array(z.object({
         method: z.string().min(1, 'Method is required'),
@@ -87,7 +80,7 @@ const treatmentBaseSchema = z.object({
 export const createTreatmentSchema = z.object({
     body: treatmentBaseSchema.omit({ patientId: true }), // ← Remove patientId requirement
     params: z.object({
-        id: validateObjectId('Invalid patient ID')
+        patientId: validateObjectId('Invalid patient ID')
     })
 });
 
@@ -109,9 +102,9 @@ export const treatmentParamsSchema = z.object({
 // Schema for validating patient ID in URL params
 export const patientTreatmentsParamsSchema = z.object({
     params: z.object({
-        id: validateObjectId('Invalid patient ID')
+        patientId: validateObjectId('Invalid patient ID')
     })
-}); 
+});
 
 export const updateHomeworkSchema = z.object({
     body: z.object({

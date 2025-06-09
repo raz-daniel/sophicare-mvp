@@ -1,5 +1,6 @@
 import { Plus, Trash2 } from 'lucide-react';
 import { InsightCategory, InsightSource, type KeyInsight } from '../../../../types/treatment';
+import { capitalize, formatEnumValue } from '../../../../utils/stringUtils';
 
 interface DynamicKeyInsightsListProps {
   insights: KeyInsight[];
@@ -10,11 +11,26 @@ export const DynamicKeyInsightsList = ({
   insights,
   onChange
 }: DynamicKeyInsightsListProps) => {
+
+  // Object mapping instead of switch case - Uncle Bob approved!
+  const getCategoryColor = (category: InsightCategory): string => {
+    const categoryColors = {
+      [InsightCategory.BREAKTHROUGH]: 'border-green-300 bg-green-50',
+      [InsightCategory.CONCERN]: 'border-red-300 bg-red-50',
+      [InsightCategory.PATTERN]: 'border-blue-300 bg-blue-50',
+      [InsightCategory.GOAL]: 'border-purple-300 bg-purple-50',
+      [InsightCategory.PROGRESS]: 'border-yellow-300 bg-yellow-50'
+    } as const;
+    
+    return categoryColors[category] || '';
+  };
+
   const addInsight = () => {
     const newInsight: KeyInsight = {
       text: '',
       category: InsightCategory.PROGRESS,
-      relatedTo: InsightSource.PATIENT
+      relatedTo: InsightSource.PATIENT,
+      createdAt: new Date().toISOString()
     };
     onChange([...insights, newInsight]);
   };
@@ -29,23 +45,6 @@ export const DynamicKeyInsightsList = ({
       i === index ? { ...insight, [field]: value } : insight
     );
     onChange(updatedInsights);
-  };
-
-  const getCategoryColor = (category: InsightCategory) => {
-    switch (category) {
-      case InsightCategory.BREAKTHROUGH:
-        return 'border-green-300 bg-green-50';
-      case InsightCategory.CONCERN:
-        return 'border-red-300 bg-red-50';
-      case InsightCategory.PATTERN:
-        return 'border-blue-300 bg-blue-50';
-      case InsightCategory.GOAL:
-        return 'border-purple-300 bg-purple-50';
-      case InsightCategory.PROGRESS:
-        return 'border-yellow-300 bg-yellow-50';
-      default:
-        return '';
-    }
   };
 
   return (
@@ -84,7 +83,7 @@ export const DynamicKeyInsightsList = ({
                 >
                   {Object.values(InsightCategory).map(category => (
                     <option key={category} value={category}>
-                      {category.charAt(0).toUpperCase() + category.slice(1).replace('_', ' ')}
+                      {formatEnumValue(category)}
                     </option>
                   ))}
                 </select>
@@ -97,7 +96,7 @@ export const DynamicKeyInsightsList = ({
                 >
                   {Object.values(InsightSource).map(source => (
                     <option key={source} value={source}>
-                      {source.charAt(0).toUpperCase() + source.slice(1)}
+                      {capitalize(source)}
                     </option>
                   ))}
                 </select>

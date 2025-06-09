@@ -16,10 +16,11 @@ export const createTreatment = async (
 ) => {
     try {
         const { userId } = req.user as TokenPayload;
-        const { id: patientId } = req.params;
+        const { patientId } = req.params;
 
         // Verify patient ownership
         const patient = await Patient.findOne({ _id: patientId, userId });
+
         if (!patient) {
             throw new AppError('Patient not found', StatusCodes.NOT_FOUND);
         }
@@ -30,6 +31,11 @@ export const createTreatment = async (
             patientId
         });
 
+        await Patient.findByIdAndUpdate(patientId, {
+            lastTreatmentDate: new Date(),
+            $inc: { treatmentCount: 1 }
+        });
+        
         res.status(StatusCodes.CREATED).json(treatment);
     } catch (error) {
         next(error);
@@ -47,7 +53,7 @@ export const getTreatmentsByPatient = async (
 ) => {
     try {
         const { userId } = req.user as TokenPayload;
-        const { id: patientId } = req.params;
+        const { patientId } = req.params;
 
         // Verify patient ownership
         const patient = await Patient.findOne({ _id: patientId, userId });

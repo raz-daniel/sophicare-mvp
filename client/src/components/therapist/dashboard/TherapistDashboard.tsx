@@ -1,6 +1,6 @@
-import { useAppSelector } from '../../hooks/useAppSelector';
+import { useAppSelector } from '../../../hooks/useAppSelector';
 import { useNavigate } from 'react-router-dom';
-import { AddPatient } from './AddPatient';
+import { ROUTES } from '../../../constants/routes';
 
 const TherapistDashboard = () => {
   const navigate = useNavigate();
@@ -45,14 +45,14 @@ const TherapistDashboard = () => {
           <h2 className="text-xl font-semibold mb-4">Add New Patient</h2>
           <div className="flex flex-col gap-2">
             <button 
-              onClick={() => navigate('/add-patient')} 
+              onClick={() => navigate(ROUTES.THERAPIST.ADD_PATIENT)} 
               className="px-4 py-2 bg-primary text-white rounded flex items-center justify-center gap-2"
             >
               <span className="text-xl">+</span>
               Add New Patient
             </button>
             <button
-              onClick={() => navigate('/add-therapy')}
+              onClick={() => navigate(ROUTES.THERAPIST.ADD_TREATMENT)}
               className="px-4 py-2 bg-primary text-white rounded flex items-center justify-center gap-2 mt-2" 
             >
               <span className="text-xl">+</span>

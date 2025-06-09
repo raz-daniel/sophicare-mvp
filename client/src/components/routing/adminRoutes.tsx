@@ -1,12 +1,13 @@
-// routing/adminRoutes.tsx
 import { Route } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 import AdminDashboard from '../admin/AdminDashboard';
+import { ROUTES } from '../../constants/routes';
+import { UserRole } from '../../types/auth';
 
-export const adminRoutes = (
+export const AdminRoutes = (
   <>
-    <Route path="/admin" element={
-      <ProtectedRoute allowedRoles={['admin']}>
+    <Route path={ROUTES.ADMIN.DASHBOARD} element={
+      <ProtectedRoute allowedRoles={[UserRole.ADMIN]}>
         <AdminDashboard />
       </ProtectedRoute>
     } />

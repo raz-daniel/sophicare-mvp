@@ -1,6 +1,5 @@
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
@@ -8,39 +7,16 @@ import { register as registerUser, clearError } from '../../store/slices/authSli
 import { AuthStatus, type RegisterCredentials } from '../../types/auth';
 import type { RootState } from '../../store';
 import { useEffect } from 'react';
+import { registerSchema } from './validations';
 
-const schema = z.object({
-    firstName: z
-        .string()
-        .min(2, 'First name must be at least 2 characters')
-        .max(50, 'First name must not exceed 50 characters'),
-    lastName: z
-        .string()
-        .min(2, 'Last name must be at least 2 characters')
-        .max(50, 'Last name must not exceed 50 characters'),
-    email: z
-        .string()
-        .email('Please enter a valid email address'),
-    password: z
-        .string()
-        .min(8, 'Password must be at least 8 characters')
-        .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-        .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-        .regex(/[0-9]/, 'Password must contain at least one number')
-        .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character'),
-});
 
 export const RegisterForm = () => {
     const dispatch = useAppDispatch();
     const navigate = useNavigate();
-    const { status = AuthStatus.IDLE, error = null } = useAppSelector((state: RootState) => state.auth || {});
+    const { status = AuthStatus.IDLE, error = null } = useAppSelector((state: RootState) => state.auth);
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<RegisterCredentials>({
-        resolver: zodResolver(schema),
+    const { register, handleSubmit, formState: { errors }, } = useForm<RegisterCredentials>({
+        resolver: zodResolver(registerSchema),
     });
 
     useEffect(() => {
@@ -51,11 +27,10 @@ export const RegisterForm = () => {
 
     const onSubmit = async (data: RegisterCredentials) => {
         try {
-            const result = await dispatch(registerUser(data)).unwrap();
-            // Redirect to dashboard for new therapists
-            navigate('/dashboard');
+            await dispatch(registerUser(data)).unwrap();
+            navigate('/');
         } catch (error) {
-            // Error is handled by the reducer
+            console.error('Registration failed:', error);
         }
     };
 

@@ -1,13 +1,13 @@
 
 import { Link, useLocation } from 'react-router-dom';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import { getNavigationItems } from '../../services/navigationService';
+import { NAVIGATION_CONFIG } from '../../config/navigation';
 
 export const Sidebar = () => {
   const { activeRole } = useAppSelector((state) => state.auth);
   const location = useLocation();
-  const navItems = getNavigationItems(activeRole);
-
+  const navItems = NAVIGATION_CONFIG[activeRole as keyof typeof NAVIGATION_CONFIG] || [];
+  
   return (
     <nav className="p-4">
       <ul className="space-y-2">

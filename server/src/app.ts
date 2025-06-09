@@ -7,8 +7,9 @@ import { connectWithRetry, closeConnection } from './db/mongoose';
 import config from './config/config';
 import healthRoutes from './routes/health';
 import authRoutes from './routes/auth';
-import patientRoutes from './routes/patient';
-import treatmentRoutes from './routes/treatment';
+import patientRoutes from './routes/patientRoutes';
+import treatmentRoutes from './routes/treatmentRoutes';
+import therapistRoutes from './routes/therapistRoutes';
 import appointmentRoutes from './routes/appointmentRoutes';
 
 const createApp = (): Express => {
@@ -19,11 +20,12 @@ const createApp = (): Express => {
   app.use(express.urlencoded({ extended: true }));
 
   app.use('/health', healthRoutes);
-  app.use('/api/auth', authRoutes); 
-  app.use('/api/patients', patientRoutes);
-  app.use('/api/treatments', treatmentRoutes);
-  app.use('/api/appointments', appointmentRoutes);
-  
+  app.use('/auth', authRoutes);
+  app.use('/pro', therapistRoutes);
+  app.use('/member', patientRoutes);
+  app.use('/pro/treatments', treatmentRoutes);
+  app.use('/pro/appointments', appointmentRoutes);
+
   app.use(notFound);
   app.use(errorLogger);
   app.use(errorResponder);

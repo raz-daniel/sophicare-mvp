@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { MaritalStatus, Gender, type CreatePatientData, PatientStatus } from '../../types/patient';
-import { patientService } from '../../services/authAware/patientService';
+import { MaritalStatus, Gender, type CreatePatientData, PatientStatus } from '../../../types/patient';
+import { patientService } from '../../../services/authAware/patientService';
 
 export const AddPatient = () => {
   const navigate = useNavigate();
