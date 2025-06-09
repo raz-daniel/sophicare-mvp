@@ -1,28 +1,21 @@
 import { Plus, Trash2, Star } from 'lucide-react';
-import { NoteImportance } from '../../../../types/treatment';
+import { NoteImportance, type PatientNote, type TreatmentNote } from '../../../../types/treatment';
 
-interface Note {
-  text: string;
-  importance: NoteImportance;
-}
+type NoteType = PatientNote | TreatmentNote;
 
 interface DynamicNotesListProps {
   title: string;
-  notes: Note[];
-  onChange: (notes: Note[]) => void;
+  notes: NoteType[];
+  onChange: (notes: NoteType[]) => void;
   placeholder?: string;
 }
 
-export const DynamicNotesList = ({
-  title,
-  notes,
-  onChange,
-  placeholder = "Enter note..."
-}: DynamicNotesListProps) => {
+export const DynamicNotesList = ({ title, notes, onChange, placeholder = "Enter note..." }: DynamicNotesListProps) => {
   const addNote = () => {
-    const newNote: Note = {
+    const newNote: NoteType = {
       text: '',
-      importance: NoteImportance.NORMAL
+      importance: NoteImportance.NORMAL,
+      createdAt: new Date().toISOString()
     };
     onChange([...notes, newNote]);
   };
@@ -32,7 +25,7 @@ export const DynamicNotesList = ({
     onChange(updatedNotes);
   };
 
-  const updateNote = (index: number, field: keyof Note, value: string | NoteImportance) => {
+  const updateNote = (index: number, field: keyof NoteType, value: string | NoteImportance) => {
     const updatedNotes = notes.map((note, i) => 
       i === index ? { ...note, [field]: value } : note
     );
@@ -69,7 +62,6 @@ export const DynamicNotesList = ({
         <div className="space-y-3">
           {notes.map((note, index) => (
             <div key={index} className="flex gap-3 items-start">
-              {/* Importance Toggle */}
               <button
                 type="button"
                 onClick={() => toggleImportance(index)}
@@ -86,7 +78,6 @@ export const DynamicNotesList = ({
                 />
               </button>
 
-              {/* Note Text */}
               <textarea
                 value={note.text}
                 onChange={(e) => updateNote(index, 'text', e.target.value)}
@@ -99,7 +90,6 @@ export const DynamicNotesList = ({
                 rows={2}
               />
 
-              {/* Remove Button */}
               <button
                 type="button"
                 onClick={() => removeNote(index)}

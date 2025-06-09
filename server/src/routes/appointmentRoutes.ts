@@ -1,6 +1,4 @@
-
 import { Router } from 'express';
-import { authenticate } from '../middleware/auth';
 import { validate } from '../middleware/validation';
 import {
     createAppointment,
@@ -16,9 +14,7 @@ import {
     appointmentQuerySchema
 } from '../validators/appointmentValidator';
 
-
 const router = Router();
-router.use(authenticate);
 
 router.post('/', validate(createAppointmentSchema), createAppointment);
 router.get('/', validate(appointmentQuerySchema), getAppointments);

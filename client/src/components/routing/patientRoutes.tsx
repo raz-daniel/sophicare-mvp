@@ -1,16 +1,16 @@
-// routing/patientRoutes.tsx
 import { Route } from 'react-router-dom';
 import { ProtectedRoute } from './ProtectedRoute';
 import PatientDashboard from '../patient/PatientDashboard';
+import { ROUTES } from '../../constants/routes';
+import { UserRole } from '../../types/auth';
 
-
-export const patientRoutes = (
+export const PatientRoutes = (
   <>
-    <Route path="/my-dashboard" element={
-      <ProtectedRoute allowedRoles={['patient']}>
+    <Route path={ROUTES.PATIENT.DASHBOARD} element={
+      <ProtectedRoute allowedRoles={[UserRole.PATIENT]}>
         <PatientDashboard />
       </ProtectedRoute>
     } />
-
+    
   </>
 );

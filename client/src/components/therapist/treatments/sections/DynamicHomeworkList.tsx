@@ -1,5 +1,6 @@
 import { Plus, Trash2 } from 'lucide-react';
 import { HomeworkTarget, HomeworkStatus, type Homework } from '../../../../types/treatment';
+import { capitalize, formatEnumValue } from '../../../../utils/stringUtils';
 
 interface DynamicHomeworkListProps {
   homework: Homework[];
@@ -10,13 +11,26 @@ export const DynamicHomeworkList = ({
   homework,
   onChange
 }: DynamicHomeworkListProps) => {
+  
+  // Object mapping instead of switch case - Uncle Bob approved!
+  const getTargetColor = (target: HomeworkTarget): string => {
+    const targetColors = {
+      [HomeworkTarget.PATIENT]: 'border-blue-300 bg-blue-50',
+      [HomeworkTarget.THERAPIST]: 'border-green-300 bg-green-50',
+      [HomeworkTarget.BOTH]: 'border-purple-300 bg-purple-50'
+    } as const;
+    
+    return targetColors[target] || '';
+  };
+
   const addHomework = () => {
     const newHomework: Homework = {
       text: '',
       task: '',
       assignedTo: HomeworkTarget.PATIENT,
-      status: HomeworkStatus.IN_PROGRESS,
-      notes: ''
+      status: HomeworkStatus.DRAFT,
+      notes: '',
+      createdAt: new Date().toISOString() // Add timestamp automatically
     };
     onChange([...homework, newHomework]);
   };
@@ -31,19 +45,6 @@ export const DynamicHomeworkList = ({
       i === index ? { ...hw, [field]: value } : hw
     );
     onChange(updatedHomework);
-  };
-
-  const getTargetColor = (target: HomeworkTarget) => {
-    switch (target) {
-      case HomeworkTarget.PATIENT:
-        return 'border-blue-300 bg-blue-50';
-      case HomeworkTarget.THERAPIST:
-        return 'border-green-300 bg-green-50';
-      case HomeworkTarget.BOTH:
-        return 'border-purple-300 bg-purple-50';
-      default:
-        return '';
-    }
   };
 
   return (
@@ -77,7 +78,7 @@ export const DynamicHomeworkList = ({
                 >
                   {Object.values(HomeworkTarget).map(target => (
                     <option key={target} value={target}>
-                      {target.charAt(0).toUpperCase() + target.slice(1)}
+                      {capitalize(target)}
                     </option>
                   ))}
                 </select>
@@ -90,7 +91,7 @@ export const DynamicHomeworkList = ({
                 >
                   {Object.values(HomeworkStatus).map(status => (
                     <option key={status} value={status}>
-                      {status.charAt(0).toUpperCase() + status.slice(1).replace(/([A-Z])/g, ' $1')}
+                      {formatEnumValue(status)}
                     </option>
                   ))}
                 </select>

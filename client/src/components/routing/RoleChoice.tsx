@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { useAppDispatch } from '../../hooks/useAppDispatch';
 import { useAppSelector } from '../../hooks/useAppSelector';
-import type { UserRole } from '../../types/auth';
 import { setActiveRole } from '../../store/slices/authSlice';
+import { ROUTES } from '../../constants/routes';
+import { UserRole } from '../../types/auth';
 
 interface RoleOption {
   title: string;
@@ -13,32 +14,38 @@ interface RoleOption {
   role: string;
 }
 
+
 export const RoleChoice = () => {
   const navigate = useNavigate();
   const { user } = useAppSelector((state) => state.auth);
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const dispatch = useAppDispatch();
 
+  console.log('RoleChoice - user:', user);
+
   const roleOptions: RoleOption[] = [
     {
       title: "Care Provider - Workspace Access",
       description: "Manage treatments and clients",
-      path: "/dashboard",
-      role: "therapist"
+      path: ROUTES.THERAPIST.DASHBOARD,
+      role: UserRole.THERAPIST
     },
     {
       title: "Client Portal - Personal Care Space", 
       description: "View Treatments and progress",
-      path: "/my-treatments",
-      role: "patient"
+      path: ROUTES.PATIENT.DASHBOARD,
+      role: UserRole.PATIENT
     },
     {
       title: "Administrator - System Control",
       description: "Manage the system and permissions",
-      path: "/admin",
-      role: "admin"
+      path: ROUTES.ADMIN.DASHBOARD,
+      role: UserRole.ADMIN
     }
   ].filter(option => user?.role.includes(option.role as UserRole));
+
+  console.log('RoleChoice - roleOptions:', roleOptions);
+
 
   const container = {
     hidden: { opacity: 0 },
@@ -58,10 +65,7 @@ export const RoleChoice = () => {
   const handleRoleSelect = (path: string, role: string) => {
     setSelectedRole(role);
     dispatch(setActiveRole(role as UserRole));
-
-    setTimeout(() => {
-      navigate(path);
-    }, 500);
+    navigate(path);
   };
 
   return (

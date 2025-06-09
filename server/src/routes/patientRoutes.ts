@@ -1,5 +1,4 @@
 import { Router } from 'express';
-import { authenticate } from '../middleware/auth';
 import { validate } from '../middleware/validation';
 import {
     createPatient,
@@ -14,15 +13,18 @@ import {
     patientParamsSchema,
     patientQuerySchema
 } from '../validators/patientValidator';
+import treatmentRoutes from './nestedTreatmentRoutes';
 
 const router = Router();
 
-router.use(authenticate);
-
+// Patient CRUD operations
 router.post('/', validate(createPatientSchema), createPatient);
 router.get('/', validate(patientQuerySchema), getPatients);
 router.get('/:id', validate(patientParamsSchema), getPatientById);
 router.put('/:id', validate(updatePatientSchema), updatePatient);
 router.delete('/:id', validate(patientParamsSchema), deletePatient);
 
-export default router; 
+// Nested routes for patient treatments
+router.use('/:patientId/treatments', treatmentRoutes);
+
+export default router;
