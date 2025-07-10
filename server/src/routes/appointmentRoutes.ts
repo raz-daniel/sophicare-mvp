@@ -1,18 +1,7 @@
 import { Router } from 'express';
 import { validate } from '../middleware/validation';
-import {
-    createAppointment,
-    getAppointments,
-    getAppointmentById,
-    updateAppointment,
-    deleteAppointment
-} from '../controllers/appointmentController';
-import {
-    createAppointmentSchema,
-    updateAppointmentSchema,
-    appointmentParamsSchema,
-    appointmentQuerySchema
-} from '../validators/appointmentValidator';
+import { createAppointment, getAppointments, getAppointmentById, updateAppointment, deleteAppointment } from '../controllers/appointmentController';
+import { createAppointmentSchema, updateAppointmentSchema, appointmentParamsSchema, appointmentQuerySchema } from '../validators/appointmentValidator';
 
 const router = Router();
 

@@ -16,6 +16,9 @@ const config: IConfig = {
   auth: {
     jwtSecret: process.env.JWT_SECRET as string,
     jwtExpiresIn: process.env.JWT_EXPIRES_IN as string
+  },
+  openai: {
+    apiKey: process.env.OPENAI_API_KEY as string,
   }
 };
 

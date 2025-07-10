@@ -1,14 +1,7 @@
 import { Router } from 'express';
 import { validate } from '../middleware/validation';
-import {
-    getTreatmentById,
-    updateTreatment,
-    deleteTreatment
-} from '../controllers/treatmentController';
-import {
-    updateTreatmentSchema,
-    treatmentParamsSchema
-} from '../validators/treatmentValidator';
+import { getTreatmentById, updateTreatment, deleteTreatment } from '../controllers/treatmentController';
+import { updateTreatmentSchema, treatmentParamsSchema } from '../validators/treatmentValidator';
 
 const router = Router();
 

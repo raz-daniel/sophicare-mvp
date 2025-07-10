@@ -5,8 +5,8 @@ import { RoleChoice } from './RoleChoice';
 import { ROUTES } from '../../constants/routes';
 import { UserRole } from '../../types/auth';
 import { TherapistRoutes } from './TherapistRoutes';
-import { PatientRoutes } from './PatientRoutes';
-import { AdminRoutes } from './AdminRoutes';
+import { PatientRoutes } from './patientRoutes';
+import { AdminRoutes } from './adminRoutes';
 
 const RootRedirect = () => {
   const { activeRole, isAuthenticated } = useAppSelector((state) => state.auth);

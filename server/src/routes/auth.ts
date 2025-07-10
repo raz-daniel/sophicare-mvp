@@ -3,13 +3,7 @@ import { validate } from '../middleware/validation';
 import { authenticate } from '../middleware/auth';
 import { loginLimiter, registerLimiter } from '../middleware/rateLimiting';
 import { registerSchema, loginSchema, refreshTokenSchema } from '../validators/authValidator';
-import { 
-  registerController, 
-  loginController, 
-  refreshTokenController,
-  getCurrentUserController,
-  logoutController 
-} from '../controllers/authController';
+import { registerController, loginController, refreshTokenController, getCurrentUserController, logoutController } from '../controllers/authController';
 
 const router = Router();
 

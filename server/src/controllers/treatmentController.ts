@@ -9,11 +9,7 @@ import { TokenPayload } from '../types/TokenPayload';
  * Create a new treatment record for a patient
  * Verifies patient ownership before creation
  */
-export const createTreatment = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const createTreatment = async ( req: Request, res: Response, next: NextFunction ) => {
     try {
         const { userId } = req.user as TokenPayload;
         const { patientId } = req.params;
@@ -46,11 +42,7 @@ export const createTreatment = async (
  * Get all treatments for a specific patient
  * Verifies patient ownership before fetching treatments
  */
-export const getTreatmentsByPatient = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const getTreatmentsByPatient = async ( req: Request, res: Response, next: NextFunction ) => {
     try {
         const { userId } = req.user as TokenPayload;
         const { patientId } = req.params;
@@ -79,11 +71,7 @@ export const getTreatmentsByPatient = async (
  * Get a single treatment by ID
  * Verifies treatment belongs to therapist's patient
  */
-export const getTreatmentById = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const getTreatmentById = async ( req: Request, res: Response, next: NextFunction ) => {
     try {
         const { userId } = req.user as TokenPayload;
         const { id: treatmentId } = req.params;
@@ -103,11 +91,7 @@ export const getTreatmentById = async (
  * Update a treatment record
  * Verifies ownership and prevents patientId/userId changes
  */
-export const updateTreatment = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const updateTreatment = async ( req: Request, res: Response, next: NextFunction ) => {
     try {
         const { userId } = req.user as TokenPayload;
         const { id: treatmentId } = req.params;
@@ -143,11 +127,7 @@ export const updateTreatment = async (
  * Soft delete a treatment by setting status to CANCELLED
  * Verifies ownership before updating
  */
-export const deleteTreatment = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const deleteTreatment = async ( req: Request, res: Response, next: NextFunction ) => {
     try {
         const { userId } = req.user as TokenPayload;
         const { id: treatmentId } = req.params;
@@ -177,11 +157,7 @@ export const deleteTreatment = async (
  * Get all highlighted notes for a patient across all treatments
  * Used for patient overview and key insights dashboard
  */
-export const getHighlightedNotes = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const getHighlightedNotes = async ( req: Request, res: Response, next: NextFunction ) => {
     try {
         const { userId } = req.user as TokenPayload;
         const { id: patientId } = req.params;
@@ -240,11 +216,7 @@ export const getHighlightedNotes = async (
  * Get active homework for a patient across all treatments
  * Returns all homework - UI handles filtering by assignedTo
  */
-export const getActiveHomework = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const getActiveHomework = async ( req: Request, res: Response, next: NextFunction ) => {
     try {
         const { userId } = req.user as TokenPayload;
         const { id: patientId } = req.params;
@@ -291,11 +263,7 @@ export const getActiveHomework = async (
  * Update homework status for a specific homework item
  * Used to mark homework as finished, quit, level up, etc.
  */
-export const updateHomeworkStatus = async (
-    req: Request,
-    res: Response,
-    next: NextFunction
-) => {
+export const updateHomeworkStatus = async ( req: Request, res: Response, next: NextFunction ) => {
     try {
         const { userId } = req.user as TokenPayload;
         const { id: treatmentId } = req.params;
