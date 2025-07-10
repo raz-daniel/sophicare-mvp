@@ -11,4 +11,7 @@ export interface IConfig {
     jwtSecret: string;
     jwtExpiresIn: string;
   };
+  openai: {
+    apiKey: string;
+  }
 } 

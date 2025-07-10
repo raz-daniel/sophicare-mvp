@@ -11,6 +11,7 @@ import patientRoutes from './routes/patientRoutes';
 import treatmentRoutes from './routes/treatmentRoutes';
 import therapistRoutes from './routes/therapistRoutes';
 import appointmentRoutes from './routes/appointmentRoutes';
+import aiRoutes from './routes/aiRoutes';
 
 const createApp = (): Express => {
   const app = express();
@@ -25,6 +26,7 @@ const createApp = (): Express => {
   app.use('/member', patientRoutes);
   app.use('/pro/treatments', treatmentRoutes);
   app.use('/pro/appointments', appointmentRoutes);
+  app.use('/ai', aiRoutes);
 
   app.use(notFound);
   app.use(errorLogger);

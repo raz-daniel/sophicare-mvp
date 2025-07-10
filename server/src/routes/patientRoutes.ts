@@ -1,18 +1,7 @@
 import { Router } from 'express';
 import { validate } from '../middleware/validation';
-import {
-    createPatient,
-    getPatients,
-    getPatientById,
-    updatePatient,
-    deletePatient
-} from '../controllers/patientController';
-import {
-    createPatientSchema,
-    updatePatientSchema,
-    patientParamsSchema,
-    patientQuerySchema
-} from '../validators/patientValidator';
+import { createPatient, getPatients, getPatientById, updatePatient, deletePatient } from '../controllers/patientController';
+import { createPatientSchema, updatePatientSchema, patientParamsSchema, patientQuerySchema } from '../validators/patientValidator';
 import treatmentRoutes from './nestedTreatmentRoutes';
 
 const router = Router();

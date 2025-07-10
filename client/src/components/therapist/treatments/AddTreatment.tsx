@@ -11,6 +11,7 @@ import { useSubmitState } from '../../../hooks/useSubmitState';
 import { SessionStatus, type CreateTreatmentData } from '../../../types/treatment';
 import { ROUTES } from '../../../constants/routes';
 import { formatEnumValue } from '../../../utils/stringUtils';
+import { DontForgetInsight } from './DontForgetInsight';
 
 export const AddTreatment = () => {
   const navigate = useNavigate();
@@ -197,6 +198,9 @@ export const AddTreatment = () => {
             </button>
           </div>
         </form>
+        <div className="mt-8 border-t pt-8">
+        <DontForgetInsight />
+        </div>
       </motion.div>
     </div>
   );

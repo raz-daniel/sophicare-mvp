@@ -1,13 +1,7 @@
 import { Router } from 'express';
 import { validate } from '../middleware/validation';
-import {
-    createTreatment,
-    getTreatmentsByPatient
-} from '../controllers/treatmentController';
-import {
-    createTreatmentSchema,
-    patientTreatmentsParamsSchema
-} from '../validators/treatmentValidator';
+import { createTreatment, getTreatmentsByPatient } from '../controllers/treatmentController';
+import { createTreatmentSchema, patientTreatmentsParamsSchema } from '../validators/treatmentValidator';
 
 const router = Router({ mergeParams: true }); // Important: merge params to access :patientId
 
