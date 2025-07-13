@@ -50,6 +50,18 @@ export const register = createAsyncThunk(
   }
 );
 
+export const googleLogin = createAsyncThunk(
+  'auth/googleLogin',
+  async (googleToken: string, { rejectWithValue }) => {
+    try {
+      const response = await authService.googleLogin(googleToken);
+      return response;
+    } catch (error) {
+      return rejectWithValue(error instanceof Error ? error.message : 'Unknown error');
+    }
+  }
+);
+
 const setUserAndRole = (state: AuthState, user: AuthState['user']) => {
   state.user = user;
   if (user && user.role.length === 1) {
@@ -120,6 +132,19 @@ const authSlice = createSlice({
         setUserAndRole(state, action.payload.user);
       })
       .addCase(register.rejected, (state, action) => {
+        state.status = AuthStatus.ERROR;
+        state.error = action.payload as string;
+      })
+      .addCase(googleLogin.pending, (state) => {
+        state.status = AuthStatus.LOADING;
+        state.error = null;
+      })
+      .addCase(googleLogin.fulfilled, (state, action) => {
+        state.status = AuthStatus.SUCCESS;
+        state.isAuthenticated = true;
+        setUserAndRole(state, action.payload.user);
+      })
+      .addCase(googleLogin.rejected, (state, action) => {
         state.status = AuthStatus.ERROR;
         state.error = action.payload as string;
       });

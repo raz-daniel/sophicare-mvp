@@ -17,6 +17,9 @@ const config: IConfig = {
     jwtSecret: process.env.JWT_SECRET as string,
     jwtExpiresIn: process.env.JWT_EXPIRES_IN as string
   },
+  google: {
+    clientId: process.env.GOOGLE_CLIENT_ID as string
+  },
   openai: {
     apiKey: process.env.OPENAI_API_KEY as string,
   }
