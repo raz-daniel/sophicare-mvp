@@ -74,7 +74,7 @@ const userSchema = new Schema<IUser>(
             default: [UserRole.THERAPIST],
             validate: {
                 validator: function(roles: UserRole[]) {
-                    return roles.length > 0; // Must have at least one role
+                    return roles.length > 0; 
                 },
                 message: 'User must have at least one role'
             }

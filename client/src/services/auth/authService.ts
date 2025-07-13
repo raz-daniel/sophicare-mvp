@@ -14,6 +14,11 @@ export const register = async (credentials: RegisterCredentials): Promise<AuthRe
   return response.data;
 };
 
+export const googleLogin = async (googleToken: string): Promise<AuthResponse> => {
+  const response = await httpClient.post<AuthResponse>('/auth/google', { googleToken });
+  tokenService.setTokens(response.data.accessToken, response.data.refreshToken);
+  return response.data
+}
 export const logout = () => {
   tokenService.clearTokens();
 };

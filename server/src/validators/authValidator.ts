@@ -22,3 +22,9 @@ export const registerSchema = z.object({
       refreshToken: z.string()
     })
   });
+
+  export const googleAuthSchema = z.object({
+    body: z.object({
+      googleToken: z.string().min(1, 'Googletokem is required')
+    })
+  })

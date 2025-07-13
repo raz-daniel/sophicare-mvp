@@ -5,6 +5,8 @@ import { User } from '../models/User';
 import { register } from '../auth/registerUser';
 import { login } from '../auth/loginUser';
 import { refreshToken as refreshUserToken } from '../auth/refreshUserToken';
+import { authenticateWithGoogle } from '../auth/googleAuth';
+
 
 export async function registerController(req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
@@ -61,6 +63,20 @@ export async function logoutController(_req: Request, res: Response, next: NextF
             message: 'Logged out successfully',
             success: true
         });
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function googleAuthController(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+        const { googleToken } = req.body;
+        if (!googleToken) {
+            throw new AppError('Google token is required', StatusCodes.BAD_REQUEST);
+        }
+
+        const result = await authenticateWithGoogle(googleToken);
+        res.status(StatusCodes.OK).json(result);
     } catch (error) {
         next(error);
     }
