@@ -21,8 +21,6 @@ export const RoleChoice = () => {
   const [selectedRole, setSelectedRole] = useState<string | null>(null);
   const dispatch = useAppDispatch();
 
-  console.log('RoleChoice - user:', user);
-
   const roleOptions: RoleOption[] = [
     {
       title: "Care Provider - Workspace Access",
@@ -43,9 +41,6 @@ export const RoleChoice = () => {
       role: UserRole.ADMIN
     }
   ].filter(option => user?.role.includes(option.role as UserRole));
-
-  console.log('RoleChoice - roleOptions:', roleOptions);
-
 
   const container = {
     hidden: { opacity: 0 },
