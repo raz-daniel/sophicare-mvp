@@ -2,10 +2,7 @@ import axios from 'axios';
 import { tokenService } from './tokenService';
 import { ROUTES } from '../../constants/routes';
 
-// const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
-
-const API_URL = import.meta.env.VITE_API_URL || 'https://backend-production-e9723.up.railway.app';
-
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
 const httpClient = axios.create({
   baseURL: API_URL,
