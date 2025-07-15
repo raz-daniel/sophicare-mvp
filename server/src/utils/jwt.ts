@@ -12,9 +12,9 @@ export const generateAccessToken = (user: IUser): string => {
       userId: user.id,
       roles: user.role
     };
-    
+    const expiresIn = (config.auth.jwtAccessExpiresIn || '15m') as import('ms').StringValue | number;
     return jwt.sign(payload, config.auth.jwtSecret, { 
-      expiresIn: '15m',
+      expiresIn,
       issuer: config.app.name
     });
   } catch (error) {
@@ -31,9 +31,9 @@ export const generateRefreshToken = (user: IUser): string => {
       userId: user.id,
       roles: user.role
     };
-
+    const expiresIn = (config.auth.jwtRefreshExpiresIn || '7d') as import('ms').StringValue | number;
     return jwt.sign(payload, config.auth.jwtSecret, {
-      expiresIn: '7d',
+      expiresIn,
       issuer: config.app.name
     });
   } catch (error) {

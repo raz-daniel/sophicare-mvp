@@ -15,7 +15,8 @@ const config: IConfig = {
   },
   auth: {
     jwtSecret: process.env.JWT_SECRET as string,
-    jwtExpiresIn: process.env.JWT_EXPIRES_IN as string
+    jwtAccessExpiresIn: process.env.JWT_ACCESS_EXPIRES_IN as string,
+    jwtRefreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN as string
   },
   google: {
     clientId: process.env.GOOGLE_CLIENT_ID as string

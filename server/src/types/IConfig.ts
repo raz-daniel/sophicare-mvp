@@ -9,7 +9,8 @@ export interface IConfig {
   };
   auth: {
     jwtSecret: string;
-    jwtExpiresIn: string;
+    jwtAccessExpiresIn: string;
+    jwtRefreshExpiresIn: string;
   };
   google: {
     clientId: string;

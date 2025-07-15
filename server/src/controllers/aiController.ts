@@ -3,7 +3,7 @@ import { StatusCodes } from 'http-status-codes';
 import { openaiService } from '../services/openaiServices';
 import { AppError } from '../errors/AppError';
 
-export const generateInsight = async (req: Request, res: Response, next: NextFunction) => {
+export const generateInsight = async (req: Request, res: Response, _next: NextFunction) => {
     try {
         const { sessionSummary } = req.body;
 

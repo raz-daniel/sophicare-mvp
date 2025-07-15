@@ -5,7 +5,8 @@ export const validateEnv = (): void => {
     'MONGODB_URI',
     'NODE_ENV',
     'JWT_SECRET',
-    'JWT_EXPIRES_IN'
+    'JWT_ACCESS_EXPIRES_IN',
+    'JWT_REFRESH_EXPIRES_IN'
   ];
   const missing = required.filter(key => !process.env[key]);
   
