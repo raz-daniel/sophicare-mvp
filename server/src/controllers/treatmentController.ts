@@ -4,33 +4,15 @@ import { Patient } from '../models/Patient';
 import { AppError } from '../errors/AppError';
 import { StatusCodes } from 'http-status-codes';
 import { TokenPayload } from '../types/TokenPayload';
+import { treatmentService } from '../services/treatmentService';
+import { buildPagination } from '../utils/pagination';
 
-/**
- * Create a new treatment record for a patient
- * Verifies patient ownership before creation
- */
 export const createTreatment = async ( req: Request, res: Response, next: NextFunction ) => {
     try {
         const { userId } = req.user as TokenPayload;
         const { patientId } = req.params;
 
-        // Verify patient ownership
-        const patient = await Patient.findOne({ _id: patientId, userId });
-
-        if (!patient) {
-            throw new AppError('Patient not found', StatusCodes.NOT_FOUND);
-        }
-
-        const treatment = await Treatment.create({
-            ...req.body,
-            userId,
-            patientId
-        });
-
-        await Patient.findByIdAndUpdate(patientId, {
-            lastTreatmentDate: new Date(),
-            $inc: { treatmentCount: 1 }
-        });
+        const treatment = await treatmentService.createTreatment(req.body, userId, patientId);
         
         res.status(StatusCodes.CREATED).json(treatment);
     } catch (error) {
@@ -38,116 +20,60 @@ export const createTreatment = async ( req: Request, res: Response, next: NextFu
     }
 };
 
-/**
- * Get all treatments for a specific patient
- * Verifies patient ownership before fetching treatments
- */
 export const getTreatmentsByPatient = async ( req: Request, res: Response, next: NextFunction ) => {
     try {
         const { userId } = req.user as TokenPayload;
         const { patientId } = req.params;
 
-        // Verify patient ownership
-        const patient = await Patient.findOne({ _id: patientId, userId });
-        if (!patient) {
-            throw new AppError('Patient not found', StatusCodes.NOT_FOUND);
-        }
+        const page = parseInt(req.query.page as string) || 1;
+        const limit = parseInt(req.query.limit as string) || 10;
 
-        const treatments = await Treatment.find({ patientId, userId })
-            .sort({ date: -1, createdAt: -1 });
+        const result = await treatmentService.getTreatmentsByPatient(userId, patientId, page, limit);
+        const pagination = buildPagination(page, limit, result.totalCount)
 
-        const count = await Treatment.countDocuments({ patientId, userId });
-
-        res.json({
-            treatments,
-            count
+        res.status(StatusCodes.OK).json({
+            treatments: result.treatments,
+            pagination
         });
     } catch (error) {
         next(error);
     }
 };
 
-/**
- * Get a single treatment by ID
- * Verifies treatment belongs to therapist's patient
- */
 export const getTreatmentById = async ( req: Request, res: Response, next: NextFunction ) => {
     try {
         const { userId } = req.user as TokenPayload;
-        const { id: treatmentId } = req.params;
+        const { id } = req.params;
 
-        const treatment = await Treatment.findOne({ _id: treatmentId, userId });
-        if (!treatment) {
-            throw new AppError('Treatment not found', StatusCodes.NOT_FOUND);
-        }
+        const treatment = await treatmentService.getTreatmentById(userId, id);
 
-        res.json(treatment);
+        res.status(StatusCodes.OK).json(treatment);
     } catch (error) {
         next(error);
     }
 };
 
-/**
- * Update a treatment record
- * Verifies ownership and prevents patientId/userId changes
- */
 export const updateTreatment = async ( req: Request, res: Response, next: NextFunction ) => {
     try {
         const { userId } = req.user as TokenPayload;
-        const { id: treatmentId } = req.params;
+        const { id } = req.params;
 
-        // Prevent patientId and userId changes
-        if (req.body.patientId || req.body.userId) {
-            throw new AppError(
-                'Cannot change treatment ownership or patient',
-                StatusCodes.BAD_REQUEST
-            );
-        }
+        const treatment = await treatmentService.updateTreatment(userId, id, req.body)
 
-        const treatment = await Treatment.findOneAndUpdate(
-            { _id: treatmentId, userId },
-            req.body,
-            {
-                new: true,
-                runValidators: true
-            }
-        );
-
-        if (!treatment) {
-            throw new AppError('Treatment not found', StatusCodes.NOT_FOUND);
-        }
-
-        res.json(treatment);
+        res.status(StatusCodes.OK).json(treatment);
     } catch (error) {
         next(error);
     }
 };
 
-/**
- * Soft delete a treatment by setting status to CANCELLED
- * Verifies ownership before updating
- */
 export const deleteTreatment = async ( req: Request, res: Response, next: NextFunction ) => {
     try {
         const { userId } = req.user as TokenPayload;
-        const { id: treatmentId } = req.params;
+        const { id } = req.params;
 
-        const treatment = await Treatment.findOneAndUpdate(
-            { _id: treatmentId, userId },
-            { status: SessionStatus.CANCELLED },
-            {
-                new: true,
-                runValidators: true
-            }
-        );
+        const treatment = await treatmentService.deleteTreatment(userId, id);
 
-        if (!treatment) {
-            throw new AppError('Treatment not found', StatusCodes.NOT_FOUND);
-        }
-
-        res.json({
-            message: 'Treatment successfully cancelled'
-        });
+        res.status(StatusCodes.OK).json(treatment);
     } catch (error) {
         next(error);
     }

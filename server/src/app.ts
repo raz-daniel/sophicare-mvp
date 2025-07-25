@@ -12,6 +12,7 @@ import treatmentRoutes from './routes/treatmentRoutes';
 import therapistRoutes from './routes/therapistRoutes';
 import appointmentRoutes from './routes/appointmentRoutes';
 import aiRoutes from './routes/aiRoutes';
+import devRoutes from './routes/devRoutes';
 
 const createApp = (): Express => {
   const app = express();
@@ -22,6 +23,7 @@ const createApp = (): Express => {
   app.use(express.urlencoded({ extended: true }));
 
   app.use('/health', healthRoutes);
+  app.use('/dev', devRoutes);
   app.use('/auth', authRoutes);
   app.use('/pro', therapistRoutes);
   app.use('/member', patientRoutes);

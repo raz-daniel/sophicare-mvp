@@ -4,7 +4,6 @@ import {
 } from '../models/Treatment';
 import { validateObjectId } from './common';
 
-// Base schema for common treatment fields
 const treatmentBaseSchema = z.object({
     patientId: validateObjectId('Invalid patient ID'),
     date: z.string()
@@ -76,7 +75,6 @@ const treatmentBaseSchema = z.object({
     }).optional()
 });
 
-// Schema for creating a new treatment
 export const createTreatmentSchema = z.object({
     body: treatmentBaseSchema.omit({ patientId: true }), // ← Remove patientId requirement
     params: z.object({
@@ -84,7 +82,6 @@ export const createTreatmentSchema = z.object({
     })
 });
 
-// Schema for updating an existing treatment
 export const updateTreatmentSchema = z.object({
     body: treatmentBaseSchema.omit({ patientId: true }).partial(),
     params: z.object({
